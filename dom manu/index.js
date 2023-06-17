@@ -1,5 +1,6 @@
 const header = document.getElementById('main-header');
 const add = document.querySelector('.title');
+const listTag = document.querySelector('li');
 const list = document.getElementsByClassName('list-group-item');
 
 header.style.borderBottom = 'solid 3px #000'
