@@ -1,0 +1,344 @@
+function varargout = guiMorse2(varargin)
+% GUIMORSE2 MATLAB code for guiMorse2.fig
+%      GUIMORSE2, by itself, creates a new GUIMORSE2 or raises the existing
+%      singleton*.
+%
+%      H = GUIMORSE2 returns the handle to a new GUIMORSE2 or the handle to
+%      the existing singleton*.
+%
+%      GUIMORSE2('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in GUIMORSE2.M with the given input arguments.
+%
+%      GUIMORSE2('Property','Value',...) creates a new GUIMORSE2 or raises the
+%      existing singleton*.  Starting from the left, property value pairs are
+%      applied to the GUI before guiMorse2_OpeningFcn gets called.  An
+%      unrecognized property name or invalid value makes property application
+%      stop.  All inputs are passed to guiMorse2_OpeningFcn via varargin.
+%
+%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
+%      instance to run (singleton)".
+%
+% See also: GUIDE, GUIDATA, GUIHANDLES
+
+% Edit the above text to modify the response to help guiMorse2
+
+% Last Modified by GUIDE v2.5 24-Jun-2023 11:17:22
+
+% Begin initialization code - DO NOT EDIT
+gui_Singleton = 1;
+gui_State = struct('gui_Name',       mfilename, ...
+                   'gui_Singleton',  gui_Singleton, ...
+                   'gui_OpeningFcn', @guiMorse2_OpeningFcn, ...
+                   'gui_OutputFcn',  @guiMorse2_OutputFcn, ...
+                   'gui_LayoutFcn',  [] , ...
+                   'gui_Callback',   []);
+if nargin && ischar(varargin{1})
+    gui_State.gui_Callback = str2func(varargin{1});
+end
+
+if nargout
+    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+else
+    gui_mainfcn(gui_State, varargin{:});
+end
+% End initialization code - DO NOT EDIT
+
+
+% --- Executes just before guiMorse2 is made visible.
+function guiMorse2_OpeningFcn(hObject, eventdata, handles, varargin)
+% This function has no output args, see OutputFcn.
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+% varargin   command line arguments to guiMorse2 (see VARARGIN)
+
+% Choose default command line output for guiMorse2
+handles.output = hObject;
+
+% Update handles structure
+guidata(hObject, handles);
+
+% UIWAIT makes guiMorse2 wait for user response (see UIRESUME)
+% uiwait(handles.figure1);
+
+
+% --- Outputs from this function are returned to the command line.
+function varargout = guiMorse2_OutputFcn(hObject, eventdata, handles) 
+% varargout  cell array for returning output args (see VARARGOUT);
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get default command line output from handles structure
+varargout{1} = handles.output;
+
+set(handles.play,'visible','off');
+set(handles.save,'visible','off');
+
+out = findobj('Tag','output');
+in = findobj('Tag','input');
+set(out,'Max',2);
+set(in,'Max',1);
+
+
+
+
+function output_Callback(hObject, eventdata, handles)
+% hObject    handle to output (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of output as text
+%        str2double(get(hObject,'String')) returns contents of output as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function output_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to output (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function input_Callback(hObject, eventdata, handles)
+% hObject    handle to input (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of input as text
+%        str2double(get(hObject,'String')) returns contents of input as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function input_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to input (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in encode.
+function encode_Callback(hObject, eventdata, handles)
+% hObject    handle to encode (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global morse_code;
+set(handles.play,'visible','on','Enable','on');
+set(handles.save,'visible','on', 'Enable','on');
+
+
+texto = get(handles.input,'String');
+load data.mat
+text = lower(texto)
+len  = length(text)
+mor=[]
+morset = '';
+space = '  ' ;
+out = findobj('Tag','output');
+
+
+    for i=1:len
+        if text(i) ==' '
+           morset = strcat(morset , '/' );
+
+            mor = [mor '/'];
+        elseif isvarname(text(i))
+            mor = [mor getfield(morse,text(i))];
+            mor = [mor ' '];
+            morset = strcat(morset,' ' ,getfield(morse,text(i)) );
+
+
+        elseif ~isempty(str2num(text(i)))
+           mor = [mor getfield(morse,['n',text(i)])];
+           mor = [mor ' '];
+           morset = strcat(morset, ' ' , getfield(morse,['n',text(i)]));
+
+
+        elseif findstr(text(i) ,morse.sc)
+            mor = [mor char(morse.scv(findstr(text(i),morse.sc)))];
+            mor = [mor ' '];
+            morset = strcat(morset , ' ', char(morse.scv(findstr(text(i),morse.sc))));
+
+        end
+    end
+
+    t = mat2str(mor);
+    removeDQ = strrep(t, '"', '');
+    removeSquareBreaces = strrep(removeDQ, '[' , '');
+    removeSquareBreaces2 = strrep(removeSquareBreaces, ']' , '');
+    set(out,'String',removeSquareBreaces2);
+
+   
+morse_code = morset
+
+
+
+% --- Executes on button press in decode.
+function decode_Callback(hObject, eventdata, handles)
+% hObject    handle to decode (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global morse_code;
+load data.mat
+
+code =  get(handles.input,'String');
+morse_code = code;
+deco = [];
+code = [code ' '];
+lcode = [];
+decode = '';
+
+out = findobj('Tag','output');
+
+set(handles.play,'visible','on','Enable','off');
+set(handles.save,'visible','on','Enable','off');
+
+for j=1:length(code)
+    if (strcmp(code(j), ' ') | strcmp(code(j),'/'))
+        for i=double('a'):double('z')
+            letter = getfield(morse,char(i));
+            if strcmp(lcode,letter)
+                deco = [deco char(i)];
+                decode = strcat(decode,char(i));
+            end
+
+        end
+        for i=0:9
+            numb =  getfield(morse,['n', num2str(i)]);
+            if strcmp(lcode, numb)
+                deco = [deco, num2str(i)];
+                decode = strcat(decode,char(i));
+            end
+        end
+
+
+        for i=1:4
+            scv = char(morse.scv(i));
+            if strcmp(lcode,scv)
+                deco = [deco, morse(i)];
+                decode = strcat(decode,morse(i));
+            end
+        end
+
+        lcode = [];
+    else
+
+        lcode = [lcode code(j)];   
+    end
+    if strcmp (code(j), '/')
+        deco = [deco ' '];
+        decode = strcat(decode,' ');
+    end
+    if strcmp (code(j), ':-:')
+        deco = [deco ','];
+        decode = strcat(decode,' ');
+    end
+
+
+end
+set(out,'String',deco);
+
+
+    
+
+
+
+
+
+
+
+
+
+
+% --- Executes on button press in play.
+function play_Callback(hObject, eventdata, handles)
+% hObject    handle to play (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global morse_code;
+global msou;
+
+save = findobj('Tag','save');
+set (save,'Enable','on');
+
+
+
+t =0:5000;
+Dot = sin(t(1:700));
+Dash = sin(t(1:2000));
+ssp = zeros(1,2000);
+lsp = zeros(1,4000);
+
+msou = [];
+clear sound;
+temp = morse_code;
+
+
+for j=1:length(temp)
+    
+    text = (char(temp(j))) ;
+    fprintf(text);
+    
+    for k=1:length(text)
+        if strcmp(text(k),'.')
+            msou = [msou Dot ssp];
+        elseif strcmp(text(k),'-')
+            msou = [msou Dash ssp];
+        elseif strcmp(text(k),' ')
+            msou = [msou lsp];
+        elseif strcmp(text(k),'/')
+            msou = [msou lsp ssp];
+        end
+    end
+end
+
+pp = audioplayer(msou,11000);
+play(pp);
+fprintf('%s: ' ,length(mat2str(morse_code)));
+pause(length(mat2str(morse_code)));
+
+
+
+% --- Executes on button press in save.
+function save_Callback(hObject, eventdata, handles)
+% hObject    handle to save (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+global morse_code msou;
+dir = uigetdir();
+if ~isempty(dir)
+    filename = strcat(dir,'morse_code.wav');
+    audiowrite(filename,msou,1100);
+end
+
+% --- Executes on button press in reset.
+function reset_Callback(hObject, eventdata, handles)
+% hObject    handle to reset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+set(handles.play,'visible','off');
+set(handles.save,'visible','off');
+
+set (handles.input,'String','');
+
+out = findobj('Tag','output');
+set(out,'String','');
+
