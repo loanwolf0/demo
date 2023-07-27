@@ -1,0 +1,59 @@
+const posts = [];
+let lastActivityTime = null;
+
+// Function to simulate creating a post
+function createPost(post) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      posts.push(post);
+      resolve();
+    }, 1000);
+  });
+}
+
+// Function to simulate updating the user's last activity time
+function updateLastUserActivityTime() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      lastActivityTime = new Date().toLocaleString();
+      resolve();
+    }, 1000);
+  });
+}
+
+// Function to simulate deleting the last post
+function deletePost() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (posts.length > 0) {
+        const deletedPost = posts.pop();
+        resolve(deletedPost);
+      } else {
+        reject('ERROR: ARRAY IS EMPTY');
+      }
+    }, 1000);
+  });
+}
+
+// Function to log all posts and the last activity time
+function logPostsAndLastActivityTime() {
+  console.log('Posts:', posts);
+  console.log('Last Activity Time:', lastActivityTime);
+}
+
+// Call the functions in the right order to achieve the desired outcome
+createPost({ title: 'Post 1' })
+  .then(() => updateLastUserActivityTime())
+  .then(() => createPost({ title: 'Post 2' }))
+  .then(() => updateLastUserActivityTime())
+  .then(() => createPost({ title: 'Post 3' }))
+  .then(() => updateLastUserActivityTime())
+  .then(() => {
+    logPostsAndLastActivityTime();
+    return deletePost();
+  })
+  .then(() => {
+    console.log('Posts after deletion:');
+    logPostsAndLastActivityTime();
+  })
+  .catch((err) => console.log(err));
